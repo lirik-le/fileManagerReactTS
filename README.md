@@ -1,46 +1,82 @@
-# Getting Started with Create React App
+# Задание Диск
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Необходимо реализовать приложение, которое бы позволило хранить файлы, а так же организовывать папочные структуру
 
-## Available Scripts
+Для это необходимо реализовать следующий набор функций
 
-In the project directory, you can run:
+- Регистрация
+- Авторизация
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Просмотр папки
+- Создание папки
+- Редактирование папки
+- Удаление папки
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+- Загрузка файла на сервер в определенную папку
+- Удаление файла из папки
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+## Регистрация и Авторизация
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Необходимо сделать защищенные авторизацией и гостевые ендпоинты. Если есть пользовательский токен с API, то давать доступ к ендпоинтам с авторизацией.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Форма регистрации и авторизации
+Должна содержать следующие поля
+	
+	- login - Логин пользователя
+	- password - Пароль пользователя (необходимо использовать для данного поля input[type=password],
+		с возможностью переключения на input[type=text])
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Для данной формы должна быть реализована валидация, на обязательность.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Папки и Файлы
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Доступ до этих разделов может получить только авторизованный пользователь.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Рабочая область (Главный экран)
+  
+Представляет собой область с папками и файлами, изначально запрашивается корневая папка для текущего пользователя (root). Затем если пользователь заходит в новую папку то отображается файлы и дочерние папки для папки, которую выбрал пользователь.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Форма создания папки
+Форма создания папки должна находится в модальном окне, которое может быть вызвано любым способом на ваш выбор (горячая клавиша, кнопка в интерфейсе, выпадающий список при клике на рабочую область и т.д.)
 
-## Learn More
+Форма должна содержать следующие поля
+		
+	name - Название папки
+	
+	Так же при создании папки необходимо передавать parentId - root или ID папки, 
+	для того чтобы понимать для какой папки эта папка станет дочерней
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Форма создания файла
+Форма аналогична "форме создания папки", и содержит следующие поля
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+	file - Файл, которой нужно сохранить на сервер
+	
+	Так же при создании файла необходимо передавать parentId - root или ID папки, 
+	для того чтобы понимать для какой папки этот файл станет дочерним
+
+### Редактирование папок
+Форма аналогична "форме создания папки".
+	
+	name - название папки
+
+### Перемещение папок
+Для перемещения папки необходимо изменить ей parentId, для этого можно использовать наработки из 
+формы "редактирование папок". Визуальное перемещение можно реализовать любым способом (кнопкой в интерфейсе, дополнительным модальным окном, drag&drop и т.д.)
+
+### Удаление папки или файла
+При удаление папки или файла, необходимо вызывать модальное окно с подтверждением удаления и только после этого удалять контент
+
+
+## Рекомендации к выполнения
+
+При реализации данного задания нужно использовать react.js и дополнительные к нему библиотеки
+
+Для визуальной составляющей приложения можно использовать [MUI](https://mui.com/material-ui/getting-started/overview/) или [tailwindcss](https://tailwindcss.com/docs/installation). 
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbLTE4NjM1MDYzODksLTE2NTQyMTExMDksLT
+ExNzIzMTgzNDRdfQ==
+-->
