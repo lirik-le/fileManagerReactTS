@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
-import {useRegisterQMutation} from "../redux/slice/authApiSlice";
+import {useRegisterQMutation} from "../redux/slice/auth/authApiSlice";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Register = () => {
             setLogin('');
             setPassword('');
             console.log(userData)
-            navigate('/');
+            navigate('/login');
         } catch (error) {
             console.log(error)
         }

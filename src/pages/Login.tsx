@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
-import {useLoginQMutation} from "../redux/slice/authApiSlice";
+import {useLoginQMutation} from "../redux/slice/auth/authApiSlice";
 import {useAppDispatch} from "../redux/store";
-import {setCredentials} from "../redux/slice/authSlice";
+import {setToken} from "../redux/slice/auth/authSlice";
+import {useCookies} from "react-cookie";
 
 
 const Login = () => {
     const navigate = useNavigate();
+    const [cookies, setCookie] = useCookies(['jwt']);
 
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
@@ -18,11 +20,11 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const userData = await loginQ({login, password}).unwrap();
-            dispatch(setCredentials(userData));
+            const token = await loginQ({login, password}).unwrap();
+            setCookie('jwt', token, { path: '/' });
+            dispatch(setToken(token));
             setLogin('');
             setPassword('');
-            console.log(setCredentials({...userData}), 'login token')
             navigate('/');
         } catch (error) {
             console.log(error)

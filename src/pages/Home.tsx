@@ -1,11 +1,18 @@
 import React from 'react';
+import {useAppSelector} from "../redux/store";
+import FolderPanel from "../components/FolderPanel";
+import Public from "../components/Public";
 
 const Home = () => {
+    const token = useAppSelector((state) => state.auth.token);
 
     return (
-        <div>
-            Главная
-        </div>
+        <main>
+            {token
+                ? <FolderPanel/>
+                : <Public/>
+            }
+        </main>
     );
 };
 

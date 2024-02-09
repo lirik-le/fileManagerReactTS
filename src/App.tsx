@@ -1,27 +1,39 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Route, Routes} from "react-router-dom";
 import Main from "./layouts/Main";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Public from "./components/Public";
-import RequireAuth from "./components/RequireAuth";
+import GuestRoute from "./components/GuestRoute";
+import {CookiesProvider, useCookies} from "react-cookie";
+import {setToken} from "./redux/slice/auth/authSlice";
+import {useAppDispatch, } from "./redux/store";
 
 function App() {
+    const dispatch = useAppDispatch();
+    const [cookies] = useCookies(['jwt']);
+
+    useEffect(() => {
+        if (cookies.jwt.token) {
+            dispatch(setToken(cookies.jwt.token));
+        }
+    }, []);
+
     return (
-        <Routes>
-            <Route path="/" element={<Main />}>
+        <CookiesProvider>
+            <Routes>
+                <Route path="/" element={<Main/>}>
 
-                <Route index element={<Public />} />
-                <Route path="login" element={<Login />} />
-                <Route path="register" element={<Register />} />
+                    <Route path='/' element={<Home/>} />
 
-                <Route element={<RequireAuth />} >
-                    <Route path='/qwe' element={<Home />} />
+                    <Route element={<GuestRoute/>}>
+                        <Route path="login" element={<Login/>}/>
+                        <Route path="register" element={<Register/>}/>
+                    </Route>
+
                 </Route>
-
-            </Route>
-        </Routes>
+            </Routes>
+        </CookiesProvider>
     );
 }
 
