@@ -14,8 +14,8 @@ function App() {
     const [cookies] = useCookies(['jwt']);
 
     useEffect(() => {
-        if (cookies.jwt.token) {
-            dispatch(setToken(cookies.jwt.token));
+        if (cookies.jwt) {
+            dispatch(setToken(cookies.jwt));
         }
     }, []);
 
