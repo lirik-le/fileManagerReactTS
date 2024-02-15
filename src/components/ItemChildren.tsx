@@ -4,7 +4,7 @@ import fileIcon from "../assets/img/file.png";
 import edit from "../assets/img/edit.png";
 import deleteIcon from "../assets/img/delete.png";
 import {addFolderToHistory, setNewFolder} from "../redux/slice/folders/folderSlice";
-import {useAppDispatch, useAppSelector} from "../redux/store";
+import {useAppDispatch} from "../redux/store";
 
 type Props = {
     el: any,

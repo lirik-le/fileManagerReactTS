@@ -25,7 +25,7 @@ const FolderPanel: FC = () => {
 
     useEffect(() => {
         if (data?.data) dispatch(setFolder(data.data));
-    }, [data]);
+    }, [data, dispatch]);
 
 
     const dragStartHandler = (folder: Item) => {

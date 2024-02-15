@@ -17,7 +17,7 @@ function App() {
         if (cookies.jwt) {
             dispatch(setToken(cookies.jwt));
         }
-    }, []);
+    }, [cookies, dispatch]);
 
     return (
         <CookiesProvider>

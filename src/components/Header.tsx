@@ -7,7 +7,7 @@ import logout from '../assets/img/logout.png'
 
 const Header = () => {
     const token = useAppSelector((state) => state.auth.token);
-    const [cookie, setCookie, removeCookie] = useCookies(['jwt']);
+    const [, , removeCookie] = useCookies(['jwt']);
     const dispatch = useAppDispatch();
 
     const logOutAndRemoveCookie = () => {
