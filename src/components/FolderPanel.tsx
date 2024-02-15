@@ -3,7 +3,7 @@ import {useAppDispatch, useAppSelector} from "../redux/store";
 import AddFormFolder from "./formFolder/AddFormFolder";
 import {addFolderToHistory, deleteFolderFromHistory, setFolder, setNewFolder} from "../redux/slice/folders/folderSlice";
 import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
-import {useDeleteFolderMutation, useGetFolderQuery} from "../redux/slice/folders/folderApiSlice";
+import {useDeleteFolderMutation, useGetFolderQuery, useMoveFolderMutation} from "../redux/slice/folders/folderApiSlice";
 import {SerializedError} from "@reduxjs/toolkit";
 import RenameFormFolder from "./formFolder/RenameFormFolder";
 import edit from '../assets/img/edit.png';
@@ -15,7 +15,7 @@ import addFolder from '../assets/img/add-folder.png';
 import importFile from '../assets/img/import-file.png';
 import AddFormFile from "./file/AddFormFile";
 import {Data} from "../types/main";
-import {useDeleteFileMutation} from "../redux/slice/files/filesApiSlice";
+import DeleteModal from "./deleteModal";
 
 type dataType = {
     data: {
@@ -29,12 +29,12 @@ const FolderPanel: FC = () => {
     const dispatch = useAppDispatch();
 
     const [activeModal, setActiveModal] = useState<string>('');
-    const [renameFolderId, setRenameFolderId] = useState<string>('');
+    const [folderId, setFolderId] = useState<string>('');
+    const [typeFile, setTypeFile] = useState<string>('');
 
     const {folder} = useAppSelector((state) => state.folder);
     const {historyFolders} = useAppSelector((state) => state.folder);
-    const [deleteFolderMutation] = useDeleteFolderMutation();
-    const [deleteFileMutation] = useDeleteFileMutation();
+    const [moveFolderMutation] = useMoveFolderMutation();
     const {data, error, isLoading, refetch} = useGetFolderQuery<dataType>(folder.id);
 
     useEffect(() => {
@@ -42,16 +42,6 @@ const FolderPanel: FC = () => {
         console.log('useEffect')
     }, [data]);
 
-    const handleDelete = async (id: string, type: string) => {
-        try {
-            type === 'folder'
-                ? await deleteFolderMutation(id)
-                : await deleteFileMutation(id);
-            refetch();
-        } catch (error) {
-            console.error('Произошла ошибка', error);
-        }
-    };
 
     const switchFolder = async (id: string, name: string) => {
         dispatch(setNewFolder(id));
@@ -69,6 +59,31 @@ const FolderPanel: FC = () => {
 
     if (error) return <div>Error</div>;
 
+    const dragStartHandler = (e: any, folder: any) => {
+        setFolderId(folder.id);
+    }
+
+    const dragOverHandler = (e: any) => {
+        e.preventDefault()
+    }
+
+    const dropHandler = async (e: any, folder: any) => {
+        e.preventDefault();
+        const folderQuery = {
+            'id': folderId,
+            'parentId': folder.id
+        }
+
+        try {
+            if (folderQuery.id !== folderQuery.parentId) {
+                await moveFolderMutation(folderQuery).unwrap();
+                refetch();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className='mt-10 mx-16'>
             <div className='flex ml-5'>
@@ -84,7 +99,8 @@ const FolderPanel: FC = () => {
 
             {activeModal === 'addFolder' && <AddFormFolder setActiveModal={setActiveModal}/>}
             {activeModal === 'addFile' && <AddFormFile setActiveModal={setActiveModal}/>}
-            {activeModal === 'renameFolder' && <RenameFormFolder setActiveModal={setActiveModal} id={renameFolderId}/>}
+            {activeModal === 'renameFolder' && <RenameFormFolder setActiveModal={setActiveModal} id={folderId}/>}
+            {activeModal === 'deleteModal' && <DeleteModal setActiveModal={setActiveModal} id={folderId} type={typeFile}/>}
 
             <div className='mt-10 ml-10 flex items-end'>
                 <p className='text-2xl font-semibold mr-24'>{folder.name === 'root' ? 'Главная' : folder.name}</p>
@@ -104,32 +120,42 @@ const FolderPanel: FC = () => {
             <div className='mt-5 mx-10 flex flex-wrap'>
                 {folder?.children.length
                     ? folder.children.map((el: any) => (
-                        <div onClick={() => el.type === 'folder'
-                            && switchFolder(el.id, el.name)
-                        } key={el.id}
-                             className='w-1/5-no-m-3 p-4 m-3 rounded hover:bg-gray-200 transition ease-in border-gray-400 border-2'>
+                        <div
+                            draggable={el.type === 'folder'}
+                            onDragStart={(e) => el.type === 'folder' && dragStartHandler(e, el)}
+                            onDragOver={(e) => el.type === 'folder' && dragOverHandler(e)}
+                            onDrop={(e) => el.type === 'folder' && dropHandler(e, el)}
+
+                            onClick={() => el.type === 'folder'
+                                && switchFolder(el.id, el.name)
+                            }
+                            key={el.id}
+                            className='w-1/5-no-m-3 p-4 m-3 rounded hover:bg-gray-200 transition ease-in border-gray-400 border-2'
+                        >
                             <p className='flex items-center mb-5'>
                                 {el.type === 'folder'
                                     ? <>
-                                        <img className='w-8 mx-2' src={folderIcon} alt="Папка"/>
+                                        <img className='w-8 mx-2' src={folderIcon} draggable={false} alt="Папка"/>
                                         {el.name}
                                     </>
                                     : <>
-                                        <img className='w-8 mx-2' src={fileIcon} alt="Папка"/>
+                                        <img className='w-8 mx-2' src={fileIcon} draggable={false} alt="Папка"/>
                                         {el.file.name}
                                     </>}
                             </p>
                             <div className='flex justify-end'>
                                 {el.type === 'folder'
-                                    && <img src={edit} alt='Изменить' onClick={(e) => {
+                                    && <img src={edit} alt='Изменить' draggable={false} onClick={(e) => {
                                         e.stopPropagation();
-                                        setRenameFolderId(el.id);
+                                        setFolderId(el.id);
                                         setActiveModal('renameFolder');
                                     }} className='w-6 cursor-pointer'/>
                                 }
-                                <img src={deleteIcon} alt='Удалить' onClick={(e) => {
+                                <img src={deleteIcon} alt='Удалить' draggable={false} onClick={(e) => {
                                     e.stopPropagation();
-                                    handleDelete(el.id, el.type);
+                                    setFolderId(el.id);
+                                    setTypeFile(el.type);
+                                    setActiveModal('deleteModal');
                                 }} className='w-6 mx-2 cursor-pointer'/>
                             </div>
                         </div>

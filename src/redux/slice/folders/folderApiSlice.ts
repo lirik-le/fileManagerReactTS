@@ -16,6 +16,13 @@ export const folderApiSlice = apiSlice.injectEndpoints({
                 body: {name, parentId},
             }),
         }),
+        moveFolder: builder.mutation({
+            query: ({id, parentId}) => ({
+                url: `/drive/folder/${id}`,
+                method: 'PATCH',
+                body: {parentId},
+            }),
+        }),
         deleteFolder: builder.mutation({
             query: id => ({
                 url: `/drive/folder/${id}`,
@@ -31,6 +38,7 @@ export const folderApiSlice = apiSlice.injectEndpoints({
 export const {
     useAddFolderMutation,
     useRenameFolderMutation,
+    useMoveFolderMutation,
     useDeleteFolderMutation,
     useGetFolderQuery,
 } = folderApiSlice
