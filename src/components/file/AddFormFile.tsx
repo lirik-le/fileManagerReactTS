@@ -13,9 +13,9 @@ const AddFormFile: FC<Props> = ({setActiveModal}) => {
     const [addFileMutation] = useAddFileMutation();
     const {refetch} = useGetFolderQuery(folderId);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            setFile(event.target.files[0]);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setFile(e.target.files[0]);
         }
     };
 
